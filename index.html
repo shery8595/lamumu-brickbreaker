@@ -159,11 +159,18 @@
         /* Character image styling and animation */
         .character-container {
             position: absolute;
-            left: 30px; /* Adjusted position */
             top: 50%;
             transform: translateY(-50%);
             z-index: 10;
             pointer-events: none;
+        }
+        
+        .character-container.left {
+            left: 30px; /* Left side position */
+        }
+        
+        .character-container.right {
+            right: 30px; /* Right side position */
         }
         
         .character-image {
@@ -217,8 +224,13 @@
     <button id="restartButton">Restart Game</button>
     
     <!-- Character image on the left side -->
-    <div class="character-container">
+    <div class="character-container left">
         <img src="lamumu_images/character1.jpg" alt="Character" class="character-image">
+    </div>
+    
+    <!-- Character image on the right side -->
+    <div class="character-container right">
+        <img src="lamumu_images/character2.jpg" alt="Character" class="character-image">
     </div>
     
     <div class="game-container">
