@@ -31,8 +31,8 @@
             border: 4px solid #E53935; /* Red border */
             border-radius: 8px;
             box-shadow: inset 0 0 20px rgba(255, 107, 107, 0.5);
-            width: 900px;
-            height: 600px;
+            width: 900px; /* Increased to fit all 17 bricks */
+            height: 500px; /* Reduced from 600px */
         }
         #title {
             display: none;
@@ -42,7 +42,7 @@
             top: 20px;
             left: 50%;
             transform: translateX(-50%);
-            font-size: 72px;
+            font-size: 48px; /* Reduced from 72px */
             font-weight: bold;
             color: white;
             font-family: 'Bubblegum Sans', cursive;
@@ -62,10 +62,10 @@
         }
         #subtitle {
             position: fixed;
-            top: 120px;
+            top: 90px; /* Adjusted from 120px */
             left: 50%;
             transform: translateX(-50%) translateX(20px);
-            font-size: 32px;
+            font-size: 24px; /* Reduced from 32px */
             font-weight: bold;
             color: white;
             font-family: 'Bubblegum Sans', cursive;
@@ -159,7 +159,7 @@
         /* Character image styling and animation */
         .character-container {
             position: absolute;
-            left: 20px;
+            left: 30px; /* Adjusted position */
             top: 50%;
             transform: translateY(-50%);
             z-index: 10;
@@ -167,10 +167,10 @@
         }
         
         .character-image {
-            width: 140px; /* Reduced size to prevent overlap */
-            height: 140px; /* Reduced size to prevent overlap */
+            width: 250px; /* Increased from 180px */
+            height: 250px; /* Increased from 180px */
             object-fit: cover;
-            border-radius: 18px;
+            border-radius: 20px;
             box-shadow: 0 8px 25px rgba(74, 144, 226, 0.3);
             border: 3px solid rgba(255, 142, 212, 0.4);
             animation: characterFloat 4s ease-in-out infinite;
@@ -222,7 +222,7 @@
     </div>
     
     <div class="game-container">
-        <canvas id="gameCanvas" width="900" height="600"></canvas>
+                        <canvas id="gameCanvas" width="900" height="500"></canvas>
     </div>
 
     <script>
