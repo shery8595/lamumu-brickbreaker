@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lamumu</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bubblegum+Sans&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #E53935, #4A90E2, #FF8ED4); /* Red, Blue, Pink to match logo */
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+            padding-top: 40px;
+            position: relative;
+        }
+        .game-container {
+            position: relative;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            margin-top: 40px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        canvas {
+            background: linear-gradient(to bottom, #FFE6E6, #E6F4FF, #FFE6F4); /* Light red, blue, pink gradient */
+            border: 4px solid #E53935; /* Red border */
+            border-radius: 8px;
+            box-shadow: inset 0 0 20px rgba(255, 107, 107, 0.5);
+            width: 900px;
+            height: 600px;
+        }
+        #title {
+            display: none;
+        }
+        #sign-title {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 72px;
+            font-weight: bold;
+            color: white;
+            font-family: 'Bubblegum Sans', cursive;
+            text-shadow: 
+                4px 4px 0 #FF6B6B,
+                -2px -2px 0 #FF6B6B,
+                2px -2px 0 #FF6B6B,
+                -2px 2px 0 #FF6B6B,
+                2px 2px 0 #FF6B6B,
+                6px 6px 0 #4ECDC4,
+                8px 8px 0 #FF8ED4,
+                10px 10px 15px rgba(0, 0, 0, 0.3);
+            z-index: 2;
+            letter-spacing: 2px;
+            padding: 10px 20px;
+            animation: float 3s ease-in-out infinite;
+        }
+        #subtitle {
+            position: fixed;
+            top: 120px;
+            left: 50%;
+            transform: translateX(-50%) translateX(20px);
+            font-size: 32px;
+            font-weight: bold;
+            color: white;
+            font-family: 'Bubblegum Sans', cursive;
+            text-shadow: 
+                2px 2px 0 #FF6B6B,
+                -1px -1px 0 #FF6B6B,
+                1px -1px 0 #FF6B6B,
+                -1px 1px 0 #FF6B6B,
+                1px 1px 0 #FF6B6B,
+                3px 3px 0 #4ECDC4,
+                4px 4px 0 #FF8ED4,
+                5px 5px 10px rgba(0, 0, 0, 0.3);
+            z-index: 2;
+            letter-spacing: 1px;
+            padding: 5px 10px;
+            animation: float 3s ease-in-out infinite;
+            animation-delay: 0.5s;
+        }
+        #score {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            font-size: 32px;
+            color: #E53935; /* Red text */
+            font-weight: bold;
+            background: linear-gradient(45deg, #FFE6E6, #E6F4FF);
+            padding: 10px 20px;
+            border-radius: 10px;
+            border: 3px solid #E53935;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s;
+        }
+        #score:hover {
+            transform: scale(1.05);
+        }
+        #level {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            font-size: 32px;
+            color: #4A90E2;
+            font-weight: bold;
+            background: linear-gradient(45deg, #E6F4FF, #FFE6F4);
+            padding: 10px 20px;
+            border-radius: 10px;
+            border: 3px solid #4A90E2;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s;
+        }
+        #level:hover {
+            transform: scale(1.05);
+        }
+        #restartButton {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 20px 40px;
+            font-size: 32px;
+            font-weight: bold;
+            color: white;
+            background: linear-gradient(45deg, #FF8ED4, #E53935);
+            border: 3px solid #FFE6F4;
+            border-radius: 15px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            z-index: 1000;
+            font-family: 'Bubblegum Sans', cursive;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        #restartButton:hover {
+            transform: translate(-50%, -50%) scale(1.1);
+            background: linear-gradient(45deg, #FF8ED4, #4A90E2);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+        }
+        @keyframes pulse {
+            0% { transform: translateX(-50%) scale(1); }
+            50% { transform: translateX(-50%) scale(1.05); }
+            100% { transform: translateX(-50%) scale(1); }
+        }
+        @keyframes float {
+            0% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(-10px); }
+            100% { transform: translateX(-50%) translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <h1 id="title">Lamumu Brick Breaker</h1>
+    <div id="sign-title">Lamumu</div>
+    <div id="subtitle">Official Collection of Commondotxyz</div>
+    <div id="score">Score: 0</div>
+    <div id="level">Level: 1</div>
+    <button id="restartButton">Restart Game</button>
+    <div class="game-container">
+        <canvas id="gameCanvas" width="900" height="600"></canvas>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const scoreElement = document.getElementById('score');
+        const levelElement = document.getElementById('level');
+
+        // Game constants
+        const PADDLE_WIDTH = 100;
+        const PADDLE_HEIGHT = 15;
+        const BALL_RADIUS = 15;
+        const BRICK_WIDTH = 45;
+        const BRICK_HEIGHT = 20;
+        const BRICK_PADDING = 6;
+        const BRICK_OFFSET_TOP = 60;
+        const BRICK_COLUMNS = 17;
+        const BRICK_ROWS = 10;
+        const BRICK_OFFSET_LEFT = (canvas.width - (BRICK_COLUMNS * (BRICK_WIDTH + BRICK_PADDING) - BRICK_PADDING)) / 2;
+        const PADDLE_SPEED = 12;
+        const POWERUP_DURATION = 5000;
+        const POWERUP_CHANCE = 0.2;
+        const BALL_SPEED = 8;
+        const MAX_BALL_SPEED = 12;
+
+        // Particle system for effects
+        let particles = [];
+
+        // Game variables
+        let score = 0;
+        let currentLevel = 1;
+        let paddleX = (canvas.width - PADDLE_WIDTH) / 2;
+        let ballX = canvas.width / 2;
+        let ballY = canvas.height - 30;
+        let ballDX = BALL_SPEED;
+        let ballDY = -BALL_SPEED;
+        let bricks = [];
+        let currentHeadIndex = 0;
+        let headImages = [];
+        let paddleImage = null;
+        let ballImage = null;
+        let keys = {
+            left: false,
+            right: false
+        };
+        let brickSound = new Audio('brick_sound/break.mp3');
+        let gameOver = false;
+        let restartButton = document.getElementById('restartButton');
+
+        // Powerup states
+        let activePowerups = {
+            largePaddle: false,
+            fastBall: false
+        };
+
+        // Brick types with red, blue, pink themed colors
+        const BRICK_TYPES = {
+            NORMAL: { hits: 1, color: "#FF8ED4", border: "#FF6B6B", glow: "#FFE6F4" },
+            MEDIUM: { hits: 2, color: "#FF6B6B", border: "#4ECDC4", glow: "#FF8ED4" },
+            HARD: { hits: 3, color: "#4ECDC4", border: "#FF6B6B", glow: "#FF8ED4" }
+        };
+
+        // Level layouts - all levels use the same symmetric flower pattern with 17 columns
+        const LEVEL_LAYOUTS = [
+            // Level 1 - Symmetric flower pattern
+            [
+                [1,0,0,0,1,0,1,1,1,0,1,1,1,0,1,1,1],
+                [1,1,0,1,1,0,1,0,1,0,1,0,1,0,1,0,1],
+                [1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1],
+                [1,0,0,0,1,0,1,0,1,0,1,0,1,0,1,0,1],
+                [1,0,0,0,1,0,1,0,1,0,1,0,1,0,1,0,1],
+                [1,0,0,0,1,0,1,0,1,0,1,0,1,0,1,0,1],
+                [1,0,0,0,1,0,1,0,1,0,1,0,1,0,1,0,1],
+                [1,0,0,0,1,0,1,0,1,0,1,0,1,0,1,0,1],
+                [1,0,0,0,1,0,1,0,1,0,1,0,1,0,1,0,1],
+                [1,0,0,0,1,0,1,1,1,0,1,1,1,0,1,1,1]
+            ],
+            // Level 2 - Same symmetric flower pattern
+            [
+                 [1,0,0,0,1,0,1,1,1,0,1,1,1,0,1,1,1],
+                [1,1,0,1,1,0,1,0,1,0,1,0,1,0,1,0,1],
+                [1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1],
+                [1,0,0,0,1,0,1,0,1,0,1,0,1,0,1,0,1],
+                [1,0,0,0,1,0,1,0,1,0,1,0,1,0,1,0,1],
+                [1,0,0,0,1,0,1,0,1,0,1,0,1,0,1,0,1],
+                [1,0,0,0,1,0,1,0,1,0,1,0,1,0,1,0,1],
+                [1,0,0,0,1,0,1,0,1,0,1,0,1,0,1,0,1],
+                [1,0,0,0,1,0,1,0,1,0,1,0,1,0,1,0,1],
+                [1,0,0,0,1,0,1,1,1,0,1,1,1,0,1,1,1]
+            ],
+            // Level 3 - Same symmetric flower pattern
+            [
+                [1,0,0,0,1,0,1,1,1,0,1,1,1,0,1,1,1],
+                [1,1,0,1,1,0,1,0,1,0,1,0,1,0,1,0,1],
+                [1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1],
+                [1,0,0,0,1,0,1,0,1,0,1,0,1,0,1,0,1],
+                [1,0,0,0,1,0,1,0,1,0,1,0,1,0,1,0,1],
+                [1,0,0,0,1,0,1,0,1,0,1,0,1,0,1,0,1],
+                [1,0,0,0,1,0,1,0,1,0,1,0,1,0,1,0,1],
+                [1,0,0,0,1,0,1,0,1,0,1,0,1,0,1,0,1],
+                [1,0,0,0,1,0,1,0,1,0,1,0,1,0,1,0,1],
+                [1,0,0,0,1,0,1,1,1,0,1,1,1,0,1,1,1]
+            ]
+        ];
+
+        class Particle {
+            constructor(x, y, color) {
+                this.x = x;
+                this.y = y;
+                this.color = color;
+                this.radius = Math.random() * 3 + 1;
+                this.vx = (Math.random() - 0.5) * 4;
+                this.vy = (Math.random() - 0.5) * 4;
+                this.life = 1;
+            }
+
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                this.life -= 0.02;
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.globalAlpha = this.life;
+                ctx.fill();
+                ctx.globalAlpha = 1;
+                ctx.closePath();
+            }
+        }
+
+        // Powerup class
+        class Powerup {
+            constructor(type) {
+                this.type = type;
+                this.x = Math.random() * (canvas.width - 20);
+                this.y = -20;
+                this.speed = 2;
+                this.radius = 10;
+                this.color = type === 'largePaddle' ? '#FFD700' : '#FF6B6B'; /* Red for fastBall */
+            }
+
+            update() {
+                this.y += this.speed;
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.shadowColor = this.color;
+                ctx.shadowBlur = 15;
+                ctx.fill();
+                ctx.shadowBlur = 0;
+                ctx.closePath();
+            }
+
+            isCollected(paddleX, paddleWidth) {
+                return this.y + this.radius > canvas.height - PADDLE_HEIGHT &&
+                       this.x > paddleX &&
+                       this.x < paddleX + paddleWidth;
+            }
+        }
+
+        let powerups = [];
+
+        // Load images
+        function loadHeadImages() {
+            // Load the ball image
+            ballImage = new Image();
+            ballImage.src = 'lamumu_images/lamumu.png';
+            ballImage.onload = function() {
+                console.log('Ball image loaded successfully');
+            };
+            ballImage.onerror = function() {
+                console.error('Failed to load ball image');
+            };
+        }
+
+        // Initialize bricks for current level
+        function initBricks() {
+            bricks = [];
+            const layout = LEVEL_LAYOUTS[currentLevel - 1];
+            
+            for (let c = 0; c < BRICK_COLUMNS; c++) {
+                bricks[c] = [];
+                for (let r = 0; r < BRICK_ROWS; r++) {
+                    if (layout[r][c]) {
+                        bricks[c][r] = {
+                            x: c * (BRICK_WIDTH + BRICK_PADDING) + BRICK_OFFSET_LEFT,
+                            y: r * (BRICK_HEIGHT + BRICK_PADDING) + BRICK_OFFSET_TOP,
+                            status: 1,
+                            type: layout[r][c],
+                            hits: BRICK_TYPES[Object.keys(BRICK_TYPES)[layout[r][c] - 1]].hits
+                        };
+                    } else {
+                        bricks[c][r] = { status: 0 };
+                    }
+                }
+            }
+        }
+
+        // Draw paddle with image
+        function drawPaddle() {
+            ctx.save();
+            
+            // Add glow effect
+            ctx.shadowColor = '#E53935';
+            ctx.shadowBlur = 15;
+            ctx.shadowOffsetX = 0;
+            ctx.shadowOffsetY = 0;
+            
+            // Create gradient
+            const currentWidth = activePowerups.largePaddle ? PADDLE_WIDTH * 1.5 : PADDLE_WIDTH;
+            const gradient = ctx.createLinearGradient(paddleX, 0, paddleX + currentWidth, 0);
+            gradient.addColorStop(0, '#4A90E2');
+            gradient.addColorStop(0.3, '#E53935');
+            gradient.addColorStop(0.7, '#FF8ED4');
+            gradient.addColorStop(1, '#4A90E2');
+            
+            ctx.fillStyle = gradient;
+            ctx.fillRect(paddleX, canvas.height - PADDLE_HEIGHT, currentWidth, PADDLE_HEIGHT);
+            
+            // Add border
+            ctx.strokeStyle = '#E53935';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(paddleX, canvas.height - PADDLE_HEIGHT, currentWidth, PADDLE_HEIGHT);
+            
+            ctx.restore();
+        }
+
+        // Draw ball with lamumu image
+        function drawBall() {
+            ctx.save();
+            
+            // Add glow effect behind the image
+            ctx.beginPath();
+            ctx.arc(ballX, ballY, BALL_RADIUS + 3, 0, Math.PI * 2);
+            ctx.strokeStyle = "#4A90E2";
+            ctx.lineWidth = 2;
+            ctx.shadowColor = "#4A90E2";
+            ctx.shadowBlur = 20;
+            ctx.stroke();
+            
+            // Draw the lamumu image
+            if (ballImage && ballImage.complete) {
+                const imageSize = BALL_RADIUS * 2;
+                ctx.drawImage(
+                    ballImage, 
+                    ballX - BALL_RADIUS, 
+                    ballY - BALL_RADIUS, 
+                    imageSize, 
+                    imageSize
+                );
+            } else {
+                // Fallback to a simple circle if image isn't loaded yet
+                ctx.beginPath();
+                ctx.arc(ballX, ballY, BALL_RADIUS, 0, Math.PI * 2);
+                ctx.fillStyle = '#4A90E2';
+                ctx.fill();
+            }
+            
+            ctx.restore();
+        }
+
+        // Draw bricks with enhanced effects
+        function drawBricks() {
+            for (let c = 0; c < BRICK_COLUMNS; c++) {
+                for (let r = 0; r < BRICK_ROWS; r++) {
+                    const brick = bricks[c][r];
+                    if (brick.status !== 0) {
+                        const brickX = c * (BRICK_WIDTH + BRICK_PADDING) + BRICK_OFFSET_LEFT;
+                        const brickY = r * (BRICK_HEIGHT + BRICK_PADDING) + BRICK_OFFSET_TOP;
+                        brick.x = brickX;
+                        brick.y = brickY;
+                        
+                        const brickType = BRICK_TYPES[Object.keys(BRICK_TYPES)[brick.type - 1]];
+                        
+                        // Draw brick shadow
+                        ctx.beginPath();
+                        ctx.rect(brickX + 2, brickY + 2, BRICK_WIDTH, BRICK_HEIGHT);
+                        ctx.fillStyle = "rgba(0, 0, 0, 0.2)";
+                        ctx.fill();
+                        ctx.closePath();
+                        
+                        // Draw brick
+                        ctx.beginPath();
+                        ctx.rect(brickX, brickY, BRICK_WIDTH, BRICK_HEIGHT);
+                        ctx.fillStyle = brickType.color;
+                        ctx.strokeStyle = brickType.border;
+                        ctx.lineWidth = 2;
+                        ctx.fill();
+                        ctx.stroke();
+                        ctx.closePath();
+                    }
+                }
+            }
+        }
+
+        // Update and draw particles
+        function updateParticles() {
+            for (let i = particles.length - 1; i >= 0; i--) {
+                particles[i].update();
+                particles[i].draw();
+                if (particles[i].life <= 0) {
+                    particles.splice(i, 1);
+                }
+            }
+        }
+
+        // Add particles when brick is hit
+        function addParticles(x, y, color) {
+            for (let i = 0; i < 10; i++) {
+                particles.push(new Particle(x, y, color));
+            }
+        }
+
+        // Check if level is complete
+        function isLevelComplete() {
+            for (let c = 0; c < BRICK_COLUMNS; c++) {
+                for (let r = 0; r < BRICK_ROWS; r++) {
+                    if (bricks[c][r].status !== 0) {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+
+        // Move to next level
+        function nextLevel() {
+            currentLevel++;
+            if (currentLevel > LEVEL_LAYOUTS.length) {
+                alert("Congratulations! You've completed all levels!");
+                currentLevel = 1;
+            }
+            levelElement.textContent = `Level: ${currentLevel}`;
+            initBricks();
+            ballX = canvas.width / 2;
+            ballY = canvas.height - 30;
+            ballDX = BALL_SPEED;
+            ballDY = -BALL_SPEED;
+        }
+
+        // Update powerups
+        function updatePowerups() {
+            // Update active powerups
+            if (activePowerups.largePaddle && Date.now() > activePowerups.largePaddle) {
+                activePowerups.largePaddle = false;
+            }
+            if (activePowerups.fastBall && Date.now() > activePowerups.fastBall) {
+                activePowerups.fastBall = false;
+                ballDX = ballDX > 0 ? 4 : -4;
+                ballDY = ballDY > 0 ? 4 : -4;
+            }
+
+            // Update falling powerups
+            for (let i = powerups.length - 1; i >= 0; i--) {
+                const powerup = powerups[i];
+                powerup.update();
+
+                // Check if powerup is collected
+                if (powerup.isCollected(paddleX, PADDLE_WIDTH)) {
+                    if (powerup.type === 'largePaddle') {
+                        activePowerups.largePaddle = Date.now() + POWERUP_DURATION;
+                    } else {
+                        activePowerups.fastBall = Date.now() + POWERUP_DURATION;
+                        ballDX *= 1.5;
+                        ballDY *= 1.5;
+                    }
+                    powerups.splice(i, 1);
+                } else if (powerup.y > canvas.height) {
+                    powerups.splice(i, 1);
+                }
+            }
+        }
+
+        // Collision detection with head image change
+        function collisionDetection() {
+            for (let c = 0; c < BRICK_COLUMNS; c++) {
+                for (let r = 0; r < BRICK_ROWS; r++) {
+                    const b = bricks[c][r];
+                    if (b.status !== 0) {
+                        if (ballX > b.x && ballX < b.x + BRICK_WIDTH &&
+                            ballY > b.y && ballY < b.y + BRICK_HEIGHT) {
+                            ballDY = -ballDY;
+                            b.hits--;
+                            const brickType = BRICK_TYPES[Object.keys(BRICK_TYPES)[b.type - 1]];
+                            addParticles(ballX, ballY, brickType.color);
+                            
+                            // Play brick break sound
+                            brickSound.currentTime = 0;
+                            brickSound.play();
+                            
+                            if (b.hits <= 0) {
+                                b.status = 0;
+                                // Spawn powerup with chance
+                                if (Math.random() < POWERUP_CHANCE) {
+                                    const type = Math.random() < 0.5 ? 'largePaddle' : 'fastBall';
+                                    powerups.push(new Powerup(type));
+                                }
+                            }
+                            score++;
+                            scoreElement.textContent = `Score: ${score}`;
+                            
+                            if (isLevelComplete()) {
+                                nextLevel();
+                            }
+                            return; // Exit after first collision
+                        }
+                    }
+                }
+            }
+        }
+
+        // Draw everything
+        function draw() {
+            if (gameOver) return;
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawBricks();
+            updateParticles();
+            updatePowerups();
+            powerups.forEach(powerup => powerup.draw());
+            drawPaddle();
+            drawBall();
+            collisionDetection();
+
+            // Update paddle position based on keyboard input
+            if (keys.left) {
+                paddleX = Math.max(0, paddleX - PADDLE_SPEED);
+            }
+            if (keys.right) {
+                paddleX = Math.min(canvas.width - (activePowerups.largePaddle ? PADDLE_WIDTH * 1.5 : PADDLE_WIDTH), 
+                                 paddleX + PADDLE_SPEED);
+            }
+
+            // Handle main ball movement and collisions
+            if (ballX + ballDX > canvas.width - BALL_RADIUS || ballX + ballDX < BALL_RADIUS) {
+                ballDX = -ballDX;
+            }
+            if (ballY + ballDY < BALL_RADIUS) {
+                ballDY = -ballDY;
+            } else if (ballY + ballDY > canvas.height - BALL_RADIUS) {
+                if (ballX > paddleX && ballX < paddleX + PADDLE_WIDTH) {
+                    ballDY = -ballDY;
+                } else {
+                    // Game over
+                    gameOver = true;
+                    restartButton.style.display = 'block';
+                }
+            }
+
+            // Main ball collision with paddle
+            if (ballY + ballDY > canvas.height - PADDLE_HEIGHT - BALL_RADIUS) {
+                const currentWidth = activePowerups.largePaddle ? PADDLE_WIDTH * 1.5 : PADDLE_WIDTH;
+                if (ballX + BALL_RADIUS > paddleX && ballX - BALL_RADIUS < paddleX + currentWidth) {
+                    const hitPosition = (ballX - paddleX) / currentWidth;
+                    // Calculate new ball direction based on hit position
+                    const angle = (hitPosition - 0.5) * Math.PI / 3; // 60-degree spread
+                    const speed = Math.sqrt(ballDX * ballDX + ballDY * ballDY);
+                    ballDX = Math.sin(angle) * speed;
+                    ballDY = -Math.abs(Math.cos(angle) * speed);
+                    
+                    // Ensure ball speed stays within bounds
+                    const currentSpeed = Math.sqrt(ballDX * ballDX + ballDY * ballDY);
+                    if (currentSpeed > MAX_BALL_SPEED) {
+                        const ratio = MAX_BALL_SPEED / currentSpeed;
+                        ballDX *= ratio;
+                        ballDY *= ratio;
+                    }
+                }
+            }
+
+            ballX += ballDX;
+            ballY += ballDY;
+
+            requestAnimationFrame(draw);
+        }
+
+        // Mouse movement handler
+        function mouseMoveHandler(e) {
+            const relativeX = e.clientX - canvas.offsetLeft;
+            const currentWidth = activePowerups.largePaddle ? PADDLE_WIDTH * 1.5 : PADDLE_WIDTH;
+            if (relativeX > 0 && relativeX < canvas.width) {
+                paddleX = relativeX - currentWidth / 2;
+            }
+        }
+
+        // Touch movement handler
+        function touchMoveHandler(e) {
+            e.preventDefault();
+            const relativeX = e.touches[0].clientX - canvas.offsetLeft;
+            const currentWidth = activePowerups.largePaddle ? PADDLE_WIDTH * 1.5 : PADDLE_WIDTH;
+            if (relativeX > 0 && relativeX < canvas.width) {
+                paddleX = relativeX - currentWidth / 2;
+            }
+        }
+
+        // Keyboard event handlers
+        function keyDownHandler(e) {
+            if (e.key === "ArrowLeft") {
+                keys.left = true;
+            } else if (e.key === "ArrowRight") {
+                keys.right = true;
+            }
+        }
+
+        function keyUpHandler(e) {
+            if (e.key === "ArrowLeft") {
+                keys.left = false;
+            } else if (e.key === "ArrowRight") {
+                keys.right = false;
+            }
+        }
+
+        // Event listeners
+        document.addEventListener("mousemove", mouseMoveHandler, false);
+        document.addEventListener("touchmove", touchMoveHandler, false);
+        document.addEventListener("keydown", keyDownHandler, false);
+        document.addEventListener("keyup", keyUpHandler, false);
+
+        // Restart button handler
+        restartButton.addEventListener("click", function() {
+            // Reset game state
+            score = 0;
+            currentLevel = 1;
+            paddleX = (canvas.width - PADDLE_WIDTH) / 2;
+            ballX = canvas.width / 2;
+            ballY = canvas.height - 30;
+            ballDX = BALL_SPEED;
+            ballDY = -BALL_SPEED;
+            gameOver = false;
+            restartButton.style.display = 'none';
+            scoreElement.textContent = `Score: ${score}`;
+            levelElement.textContent = `Level: ${currentLevel}`;
+            initBricks();
+            draw();
+        });
+
+        // Start the game
+        loadHeadImages();
+        initBricks();
+        draw();
+    </script>
+    
+    <!-- Made by credit -->
+    <div style="position: fixed; bottom: 20px; left: 20px; color: #4A90E2; font-family: 'Arial', sans-serif; font-size: 16px; font-weight: bold; text-shadow: 0 0 10px rgba(74, 144, 226, 0.8); z-index: 9999; background-color: rgba(255, 255, 255, 0.9); padding: 8px 12px; border-radius: 6px; border: 2px solid #4A90E2; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);">
+        Made by: @donutlover8595
+    </div>
+</body>
+</html>
